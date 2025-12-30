@@ -41,3 +41,4 @@ func NewInMemoryDataBase() *InMemoryDataBase {
 }
 
 var ErrNotFoundID error = errors.New("note by ID not found")
+var ErrTitleNotDefined error = errors.New("title is required field")

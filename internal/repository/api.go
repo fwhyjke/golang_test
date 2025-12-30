@@ -73,6 +73,9 @@ func (db *InMemoryDataBase) Update(ctx context.Context, id uint64, dto NoteDTO) 
 		return Note{}, ErrNotFoundID
 	}
 
+	if dto.Title == "" {
+		return Note{}, ErrTitleNotDefined
+	}
 	n.Title = dto.Title
 	n.Description = dto.Description
 	n.Done = dto.Done
@@ -90,6 +93,10 @@ func (db *InMemoryDataBase) Create(ctx context.Context, dto NoteDTO) (Note, erro
 
 	db.mu.Lock()
 	defer db.mu.Unlock()
+
+	if dto.Title == "" {
+		return Note{}, ErrTitleNotDefined
+	}
 
 	note := Note{
 		ID:          db.idGen.Add(1),

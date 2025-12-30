@@ -12,8 +12,8 @@ func NewToDoServerMux(db *data.DataBase) *http.ServeMux {
 	mux := http.NewServeMux()
 	h := handler.NewHandler(db)
 
-	mux.Handle("/todos", middleware.Chain(h.HandleToDo(), middleware.LoggingMiddleware))
-	mux.Handle("/todos/", middleware.Chain(h.HandleToDoByID(), middleware.LoggingMiddleware))
+	mux.Handle("/todos", middleware.Chain(h.HandleToDo(), middleware.LoggingMiddleware, middleware.TimeoutMiddleware))
+	mux.Handle("/todos/", middleware.Chain(h.HandleToDoByID(), middleware.LoggingMiddleware, middleware.TimeoutMiddleware))
 
 	return mux
 }

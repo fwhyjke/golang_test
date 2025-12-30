@@ -20,7 +20,7 @@ func main() {
 	srv := &http.Server{
 		Addr:         ":8080",
 		Handler:      router.NewToDoServerMux(db),
-		ReadTimeout:  5 * time.Second,
+		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}

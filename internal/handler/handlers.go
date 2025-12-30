@@ -19,18 +19,24 @@ func NewHandler(database *data.DataBase) *Handler {
 }
 
 func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	var dto data.NoteDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, "Invalid json", http.StatusBadRequest)
+		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
 	if strings.TrimSpace(dto.Title) == "" {
-		http.Error(w, "Note must have a title", http.StatusBadRequest)
+		http.Error(w, "note must have a title", http.StatusBadRequest)
 		return
 	}
 
-	note := h.db.Create(dto)
+	note, err := h.db.Create(ctx, dto)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -38,14 +44,24 @@ func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) getNotes(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	notes, err := h.db.GetAll(ctx)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(h.db.GetAll())
+	json.NewEncoder(w).Encode(notes)
 }
 
 func (h *Handler) getNoteByID(w http.ResponseWriter, r *http.Request, id uint64) {
-	note, ok := h.db.GetByID(id)
-	if !ok {
-		http.Error(w, "Invalid id", http.StatusNotFound)
+	ctx := r.Context()
+
+	note, err := h.db.GetByID(ctx, id)
+	if err != nil {
+		handleError(w, err)
 		return
 	}
 
@@ -55,20 +71,22 @@ func (h *Handler) getNoteByID(w http.ResponseWriter, r *http.Request, id uint64)
 }
 
 func (h *Handler) putNoteByID(w http.ResponseWriter, r *http.Request, id uint64) {
+	ctx := r.Context()
+
 	var dto data.NoteDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
-		http.Error(w, "Invalid json", http.StatusBadRequest)
+		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
 	if strings.TrimSpace(dto.Title) == "" {
-		http.Error(w, "Note must have a title", http.StatusBadRequest)
+		http.Error(w, "note must have a title", http.StatusBadRequest)
 		return
 	}
 
-	note, ok := h.db.Update(id, dto)
-	if !ok {
-		http.Error(w, "Invalid id", http.StatusNotFound)
+	note, err := h.db.Update(ctx, id, dto)
+	if err != nil {
+		handleError(w, err)
 		return
 	}
 
@@ -78,9 +96,12 @@ func (h *Handler) putNoteByID(w http.ResponseWriter, r *http.Request, id uint64)
 }
 
 func (h *Handler) deleteNoteByID(w http.ResponseWriter, r *http.Request, id uint64) {
-	if !h.db.Delete(id) {
-		http.Error(w, "Invalid id", http.StatusNotFound)
+	ctx := r.Context()
+
+	if err := h.db.Delete(ctx, id); err != nil {
+		handleError(w, err)
 		return
 	}
+
 	w.WriteHeader(http.StatusNoContent)
 }

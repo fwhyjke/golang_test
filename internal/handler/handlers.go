@@ -20,6 +20,9 @@ func NewHandler(database *data.DataBase) *Handler {
 
 func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	if !(r.Header.Get("Content-Type") == "application/json") {
+		http.Error(w, "invalid media-type, must be application/json", http.StatusUnsupportedMediaType)
+	}
 
 	var dto data.NoteDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -72,6 +75,9 @@ func (h *Handler) getNoteByID(w http.ResponseWriter, r *http.Request, id uint64)
 
 func (h *Handler) putNoteByID(w http.ResponseWriter, r *http.Request, id uint64) {
 	ctx := r.Context()
+	if !(r.Header.Get("Content-Type") == "application/json") {
+		http.Error(w, "invalid media-type, must be application/json", http.StatusUnsupportedMediaType)
+	}
 
 	var dto data.NoteDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {

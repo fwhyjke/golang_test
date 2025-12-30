@@ -1,4 +1,4 @@
-package data
+package repository
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ type Note struct {
 }
 
 type NoteDTO struct {
-	Title       string  `json:"title"`
+	Title       string `json:"title"`
 	Description string `json:"description"`
 	Done        bool   `json:"done"`
 }

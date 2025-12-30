@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/fwhyjke/golang_test/internal/data"
+	"github.com/fwhyjke/golang_test/internal/repository"
 )
 
 type Handler struct {
-	db *data.DataBase
+	db *repository.DataBase
 }
 
-func NewHandler(database *data.DataBase) *Handler {
+func NewHandler(database *repository.DataBase) *Handler {
 	return &Handler{
 		db: database,
 	}
@@ -24,7 +24,7 @@ func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid media-type, must be application/json", http.StatusUnsupportedMediaType)
 	}
 
-	var dto data.NoteDTO
+	var dto repository.NoteDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
@@ -79,7 +79,7 @@ func (h *Handler) putNoteByID(w http.ResponseWriter, r *http.Request, id uint64)
 		http.Error(w, "invalid media-type, must be application/json", http.StatusUnsupportedMediaType)
 	}
 
-	var dto data.NoteDTO
+	var dto repository.NoteDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return

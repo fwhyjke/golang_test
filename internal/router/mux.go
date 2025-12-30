@@ -3,12 +3,12 @@ package router
 import (
 	"net/http"
 
-	"github.com/fwhyjke/golang_test/internal/data"
 	"github.com/fwhyjke/golang_test/internal/handler"
 	"github.com/fwhyjke/golang_test/internal/middleware"
+	"github.com/fwhyjke/golang_test/internal/repository"
 )
 
-func NewToDoServerMux(db *data.DataBase) *http.ServeMux {
+func NewToDoServerMux(db *repository.DataBase) *http.ServeMux {
 	mux := http.NewServeMux()
 	h := handler.NewHandler(db)
 

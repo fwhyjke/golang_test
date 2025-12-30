@@ -11,52 +11,38 @@ import (
 	"time"
 
 	"github.com/fwhyjke/golang_test/internal/data"
-	"github.com/fwhyjke/golang_test/internal/handler"
+	"github.com/fwhyjke/golang_test/internal/router"
 )
 
 func main() {
 	db := data.NewDataBase()
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodPost:
-			handler.PostNote(db)(w, r)
-		case http.MethodGet:
-			handler.GetNotes(db)(w, r)
-		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
-		}
-	})
-
-	mux.HandleFunc("/todos/", handler.NoteByID(db))
-
 	srv := &http.Server{
 		Addr:         ":8080",
-		Handler:      mux,
+		Handler:      router.NewToDoServerMux(db),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
 	}
+
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		fmt.Println("Сервер запущен на :8080")
+		fmt.Println("Server was started on :8080")
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
 	}()
 	<-stop
-	fmt.Println("\nОстановка сервера...")
+	fmt.Println("Shutting down...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Println("Ошибка при завершении:", err)
+		fmt.Println("Error with shutting down: ", err)
 	}
 
-	fmt.Println("Сервер корректно остановлен")
+	fmt.Println("The server shutdown was successful")
 }

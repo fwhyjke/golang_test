@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-func (db *DataBase) Delete(ctx context.Context, id uint64) error {
+func (db *InMemoryDataBase) Delete(ctx context.Context, id uint64) error {
 	select {
 	case <-ctx.Done():
 		return ctx.Err()
@@ -22,7 +22,7 @@ func (db *DataBase) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 
-func (db *DataBase) GetByID(ctx context.Context, id uint64) (Note, error) {
+func (db *InMemoryDataBase) GetByID(ctx context.Context, id uint64) (Note, error) {
 	select {
 	case <-ctx.Done():
 		return Note{}, ctx.Err()
@@ -40,7 +40,7 @@ func (db *DataBase) GetByID(ctx context.Context, id uint64) (Note, error) {
 	return note, nil
 }
 
-func (db *DataBase) GetAll(ctx context.Context) ([]Note, error) {
+func (db *InMemoryDataBase) GetAll(ctx context.Context) ([]Note, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -58,7 +58,7 @@ func (db *DataBase) GetAll(ctx context.Context) ([]Note, error) {
 	return res, nil
 }
 
-func (db *DataBase) Update(ctx context.Context, id uint64, dto NoteDTO) (Note, error) {
+func (db *InMemoryDataBase) Update(ctx context.Context, id uint64, dto NoteDTO) (Note, error) {
 	select {
 	case <-ctx.Done():
 		return Note{}, ctx.Err()
@@ -81,7 +81,7 @@ func (db *DataBase) Update(ctx context.Context, id uint64, dto NoteDTO) (Note, e
 	return n, nil
 }
 
-func (db *DataBase) Create(ctx context.Context, dto NoteDTO) (Note, error) {
+func (db *InMemoryDataBase) Create(ctx context.Context, dto NoteDTO) (Note, error) {
 	select {
 	case <-ctx.Done():
 		return Note{}, ctx.Err()

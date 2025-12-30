@@ -8,7 +8,7 @@ import (
 	"github.com/fwhyjke/golang_test/internal/repository"
 )
 
-func NewToDoServerMux(db *repository.DataBase) *http.ServeMux {
+func NewToDoServerMux(db *repository.InMemoryDataBase) *http.ServeMux {
 	mux := http.NewServeMux()
 	h := handler.NewHandler(db)
 

@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	db := repository.NewDataBase()
+	db := repository.NewInMemoryDataBase()
 
 	srv := &http.Server{
 		Addr:         ":8080",

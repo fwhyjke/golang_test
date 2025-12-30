@@ -9,12 +9,12 @@ import (
 )
 
 type Handler struct {
-	db *repository.DataBase
+	repo repository.NoteRepository
 }
 
-func NewHandler(database *repository.DataBase) *Handler {
+func NewHandler(repo repository.NoteRepository) *Handler {
 	return &Handler{
-		db: database,
+		repo: repo,
 	}
 }
 
@@ -35,7 +35,7 @@ func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	note, err := h.db.Create(ctx, dto)
+	note, err := h.repo.Create(ctx, dto)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -49,7 +49,7 @@ func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getNotes(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	notes, err := h.db.GetAll(ctx)
+	notes, err := h.repo.GetAll(ctx)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -62,7 +62,7 @@ func (h *Handler) getNotes(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getNoteByID(w http.ResponseWriter, r *http.Request, id uint64) {
 	ctx := r.Context()
 
-	note, err := h.db.GetByID(ctx, id)
+	note, err := h.repo.GetByID(ctx, id)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -90,7 +90,7 @@ func (h *Handler) putNoteByID(w http.ResponseWriter, r *http.Request, id uint64)
 		return
 	}
 
-	note, err := h.db.Update(ctx, id, dto)
+	note, err := h.repo.Update(ctx, id, dto)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -104,7 +104,7 @@ func (h *Handler) putNoteByID(w http.ResponseWriter, r *http.Request, id uint64)
 func (h *Handler) deleteNoteByID(w http.ResponseWriter, r *http.Request, id uint64) {
 	ctx := r.Context()
 
-	if err := h.db.Delete(ctx, id); err != nil {
+	if err := h.repo.Delete(ctx, id); err != nil {
 		handleError(w, err)
 		return
 	}

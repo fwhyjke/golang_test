@@ -18,13 +18,6 @@ type NoteDTO struct {
 	Done        *bool  `json:"done"`
 }
 
-type IDGenerator struct {
-	counter atomic.Uint64
-}
-
-func (g *IDGenerator) NextID() uint64 {
-	return g.counter.Add(1)
-}
 
 type DataBase struct {
 	mu    sync.RWMutex

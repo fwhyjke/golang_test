@@ -20,3 +20,5 @@ docker run -p 8080:8080 image_name:image_tag
 (для теста image_name и image_tag можно указать любые)
 
 #### для завершения работы нажмите ctrl+c
+
+API будет доступно по адресу http://localhost:8080/todos и http://localhost:8080/todos/{id} соответственно.

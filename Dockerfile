@@ -9,6 +9,7 @@ RUN go mod download
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
 
+RUN go test ./...
 RUN go build -o ./bin/app ./cmd/app/
 
 EXPOSE 8080

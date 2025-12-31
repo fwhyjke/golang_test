@@ -16,6 +16,9 @@ func handleError(w http.ResponseWriter, err error) {
 
 	switch {
 	case errors.Is(err, context.Canceled):
+		statusCode = http.StatusGatewayTimeout
+		message = "time is out"
+		logMessage = "timeout:" + err.Error()
 	case errors.Is(err, context.DeadlineExceeded):
 		statusCode = http.StatusGatewayTimeout
 		message = "time is out"
@@ -23,7 +26,7 @@ func handleError(w http.ResponseWriter, err error) {
 
 	case errors.Is(err, repository.ErrNotFoundID):
 		statusCode = http.StatusNotFound
-		message = "not found" + err.Error()
+		message = err.Error()
 		logMessage = err.Error()
 
 	case errors.Is(err, repository.ErrTitleNotDefined):

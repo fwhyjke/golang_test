@@ -14,10 +14,10 @@ type NoteRepository interface {
 }
 
 type Note struct {
-	ID          uint64
-	Title       string
-	Description string
-	Done        bool
+	ID          uint64 `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Done        bool   `json:"done"`
 }
 
 type NoteDTO struct {

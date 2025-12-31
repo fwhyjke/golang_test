@@ -22,6 +22,7 @@ func (h *Handler) postNote(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	if !(r.Header.Get("Content-Type") == "application/json") {
 		http.Error(w, "invalid media-type, must be application/json", http.StatusUnsupportedMediaType)
+		return
 	}
 
 	var dto repository.NoteDTO

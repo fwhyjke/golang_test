@@ -2,6 +2,7 @@ package inmemory
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
 
@@ -19,6 +20,11 @@ func NewInMemoryDataBase() repository.NoteRepository {
 		notes: make(map[uint64]repository.Note),
 	}
 }
+
+func (c *InMemoryDataBase) CloseConn() {
+	fmt.Println("закрыли соединение")
+}
+
 
 func (db *InMemoryDataBase) Delete(ctx context.Context, id uint64) error {
 	select {

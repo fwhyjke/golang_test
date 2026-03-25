@@ -11,6 +11,7 @@ type NoteRepository interface {
 	GetAll(ctx context.Context) ([]Note, error)
 	Update(ctx context.Context, id uint64, dto NoteDTO) (Note, error)
 	Delete(ctx context.Context, id uint64) error
+	CloseConn()
 }
 
 type Note struct {

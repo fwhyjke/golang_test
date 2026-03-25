@@ -19,6 +19,10 @@ type MockRepository struct {
 	DeleteFunc  func(ctx context.Context, id uint64) error
 }
 
+func (m *MockRepository) CloseConn() {
+	return
+}
+
 func (m *MockRepository) Create(ctx context.Context, dto repository.NoteDTO) (repository.Note, error) {
 	if m.CreateFunc != nil {
 		return m.CreateFunc(ctx, dto)

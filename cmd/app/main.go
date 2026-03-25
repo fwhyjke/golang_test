@@ -10,12 +10,17 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fwhyjke/golang_test/internal/repository/inmemory"
+	"github.com/fwhyjke/golang_test/internal/repository/postgres"
 	"github.com/fwhyjke/golang_test/internal/router"
 )
 
 func main() {
-	db := inmemory.NewInMemoryDataBase()
+	pcfg, err := postgres.NewPostgresConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	db := postgres.NewPostgresConnection(pcfg)
+	defer db.CloseConn()
 
 	srv := &http.Server{
 		Addr:         ":8080",

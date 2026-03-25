@@ -1,20 +1,22 @@
-package repository
+package inmemory
 
 import (
 	"context"
 	"sync"
 	"sync/atomic"
+
+	"github.com/fwhyjke/golang_test/internal/repository"
 )
 
 type InMemoryDataBase struct {
 	mu    sync.RWMutex
-	notes map[uint64]Note
+	notes map[uint64]repository.Note
 	idGen atomic.Uint64
 }
 
-func NewInMemoryDataBase() NoteRepository {
+func NewInMemoryDataBase() repository.NoteRepository {
 	return &InMemoryDataBase{
-		notes: make(map[uint64]Note),
+		notes: make(map[uint64]repository.Note),
 	}
 }
 
@@ -29,17 +31,17 @@ func (db *InMemoryDataBase) Delete(ctx context.Context, id uint64) error {
 	defer db.mu.Unlock()
 
 	if _, ok := db.notes[id]; !ok {
-		return ErrNotFoundID
+		return repository.ErrNotFoundID
 	}
 
 	delete(db.notes, id)
 	return nil
 }
 
-func (db *InMemoryDataBase) GetByID(ctx context.Context, id uint64) (Note, error) {
+func (db *InMemoryDataBase) GetByID(ctx context.Context, id uint64) (repository.Note, error) {
 	select {
 	case <-ctx.Done():
-		return Note{}, ctx.Err()
+		return repository.Note{}, ctx.Err()
 	default:
 	}
 
@@ -48,13 +50,13 @@ func (db *InMemoryDataBase) GetByID(ctx context.Context, id uint64) (Note, error
 
 	note, ok := db.notes[id]
 	if !ok {
-		return Note{}, ErrNotFoundID
+		return repository.Note{}, repository.ErrNotFoundID
 	}
 
 	return note, nil
 }
 
-func (db *InMemoryDataBase) GetAll(ctx context.Context) ([]Note, error) {
+func (db *InMemoryDataBase) GetAll(ctx context.Context) ([]repository.Note, error) {
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -64,7 +66,7 @@ func (db *InMemoryDataBase) GetAll(ctx context.Context) ([]Note, error) {
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 
-	res := make([]Note, 0, len(db.notes))
+	res := make([]repository.Note, 0, len(db.notes))
 	for _, n := range db.notes {
 		res = append(res, n)
 	}
@@ -72,10 +74,10 @@ func (db *InMemoryDataBase) GetAll(ctx context.Context) ([]Note, error) {
 	return res, nil
 }
 
-func (db *InMemoryDataBase) Update(ctx context.Context, id uint64, dto NoteDTO) (Note, error) {
+func (db *InMemoryDataBase) Update(ctx context.Context, id uint64, dto repository.NoteDTO) (repository.Note, error) {
 	select {
 	case <-ctx.Done():
-		return Note{}, ctx.Err()
+		return repository.Note{}, ctx.Err()
 	default:
 	}
 
@@ -84,11 +86,11 @@ func (db *InMemoryDataBase) Update(ctx context.Context, id uint64, dto NoteDTO) 
 
 	n, ok := db.notes[id]
 	if !ok {
-		return Note{}, ErrNotFoundID
+		return repository.Note{}, repository.ErrNotFoundID
 	}
 
 	if dto.Title == "" {
-		return Note{}, ErrTitleNotDefined
+		return repository.Note{}, repository.ErrTitleNotDefined
 	}
 	n.Title = dto.Title
 	n.Description = dto.Description
@@ -98,10 +100,10 @@ func (db *InMemoryDataBase) Update(ctx context.Context, id uint64, dto NoteDTO) 
 	return n, nil
 }
 
-func (db *InMemoryDataBase) Create(ctx context.Context, dto NoteDTO) (Note, error) {
+func (db *InMemoryDataBase) Create(ctx context.Context, dto repository.NoteDTO) (repository.Note, error) {
 	select {
 	case <-ctx.Done():
-		return Note{}, ctx.Err()
+		return repository.Note{}, ctx.Err()
 	default:
 	}
 
@@ -109,10 +111,10 @@ func (db *InMemoryDataBase) Create(ctx context.Context, dto NoteDTO) (Note, erro
 	defer db.mu.Unlock()
 
 	if dto.Title == "" {
-		return Note{}, ErrTitleNotDefined
+		return repository.Note{}, repository.ErrTitleNotDefined
 	}
 
-	note := Note{
+	note := repository.Note{
 		ID:          db.idGen.Add(1),
 		Title:       dto.Title,
 		Description: dto.Description,

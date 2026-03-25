@@ -10,12 +10,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/fwhyjke/golang_test/internal/repository"
+	"github.com/fwhyjke/golang_test/internal/repository/inmemory"
 	"github.com/fwhyjke/golang_test/internal/router"
 )
 
 func main() {
-	db := repository.NewInMemoryDataBase()
+	db := inmemory.NewInMemoryDataBase()
 
 	srv := &http.Server{
 		Addr:         ":8080",

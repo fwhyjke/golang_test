@@ -1,10 +1,12 @@
-package repository
+package inmemory
 
 import (
 	"context"
 	"errors"
 	"testing"
 	"time"
+
+	"github.com/fwhyjke/golang_test/internal/repository"
 )
 
 func TestCreate(t *testing.T) {
@@ -13,7 +15,7 @@ func TestCreate(t *testing.T) {
 	testTable := []struct {
 		name     string
 		ctx      context.Context
-		dto      NoteDTO
+		dto      repository.NoteDTO
 		expErr   error
 		expID    uint64
 		expTitle string
@@ -23,7 +25,7 @@ func TestCreate(t *testing.T) {
 		{
 			name: "full dto",
 			ctx:  context.Background(),
-			dto: NoteDTO{
+			dto: repository.NoteDTO{
 				Title:       "title",
 				Description: "desc",
 				Done:        true,
@@ -37,7 +39,7 @@ func TestCreate(t *testing.T) {
 		{
 			name: "minimal dto",
 			ctx:  context.Background(),
-			dto: NoteDTO{
+			dto: repository.NoteDTO{
 				Title: "title2",
 			},
 			expErr:   nil,
@@ -49,8 +51,8 @@ func TestCreate(t *testing.T) {
 		{
 			name:   "empty title",
 			ctx:    context.Background(),
-			dto:    NoteDTO{},
-			expErr: ErrTitleNotDefined,
+			dto:    repository.NoteDTO{},
+			expErr: repository.ErrTitleNotDefined,
 		},
 		{
 			name: "context canceled",
@@ -59,7 +61,7 @@ func TestCreate(t *testing.T) {
 				cancel()
 				return ctx
 			}(),
-			dto:    NoteDTO{Title: "123"},
+			dto:    repository.NoteDTO{Title: "123"},
 			expErr: context.Canceled,
 		},
 	}
@@ -94,7 +96,7 @@ func TestCreate(t *testing.T) {
 
 func TestGetByID(t *testing.T) {
 	repo := NewInMemoryDataBase()
-	created, _ := repo.Create(context.Background(), NoteDTO{Title: "test"})
+	created, _ := repo.Create(context.Background(), repository.NoteDTO{Title: "test"})
 
 	testTable := []struct {
 		name   string
@@ -112,7 +114,7 @@ func TestGetByID(t *testing.T) {
 			name:   "not found",
 			ctx:    context.Background(),
 			id:     123,
-			expErr: ErrNotFoundID,
+			expErr: repository.ErrNotFoundID,
 		},
 		{
 			name: "context canceled",
@@ -139,8 +141,8 @@ func TestGetByID(t *testing.T) {
 
 func TestGetAll(t *testing.T) {
 	repo := NewInMemoryDataBase()
-	repo.Create(context.Background(), NoteDTO{Title: "t1"})
-	repo.Create(context.Background(), NoteDTO{Title: "t2"})
+	repo.Create(context.Background(), repository.NoteDTO{Title: "t1"})
+	repo.Create(context.Background(), repository.NoteDTO{Title: "t2"})
 
 	testTable := []struct {
 		name      string
@@ -182,7 +184,7 @@ func TestGetAll(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	repo := NewInMemoryDataBase()
-	created, _ := repo.Create(context.Background(), NoteDTO{
+	created, _ := repo.Create(context.Background(), repository.NoteDTO{
 		Title:       "title",
 		Description: "desc",
 		Done:        false,
@@ -192,7 +194,7 @@ func TestUpdate(t *testing.T) {
 		name     string
 		ctx      context.Context
 		id       uint64
-		dto      NoteDTO
+		dto      repository.NoteDTO
 		expErr   error
 		expTitle string
 		expDesc  string
@@ -202,7 +204,7 @@ func TestUpdate(t *testing.T) {
 			name: "success put all",
 			ctx:  context.Background(),
 			id:   created.ID,
-			dto: NoteDTO{
+			dto: repository.NoteDTO{
 				Title:       "new title",
 				Description: "new desc",
 				Done:        true,
@@ -216,7 +218,7 @@ func TestUpdate(t *testing.T) {
 			name: "success put title",
 			ctx:  context.Background(),
 			id:   created.ID,
-			dto: NoteDTO{
+			dto: repository.NoteDTO{
 				Title: "only title",
 			},
 			expErr:   nil,
@@ -228,15 +230,15 @@ func TestUpdate(t *testing.T) {
 			name:   "not found",
 			ctx:    context.Background(),
 			id:     123,
-			dto:    NoteDTO{Title: "x"},
-			expErr: ErrNotFoundID,
+			dto:    repository.NoteDTO{Title: "x"},
+			expErr: repository.ErrNotFoundID,
 		},
 		{
 			name:   "empty title",
 			ctx:    context.Background(),
 			id:     created.ID,
-			dto:    NoteDTO{},
-			expErr: ErrTitleNotDefined,
+			dto:    repository.NoteDTO{},
+			expErr: repository.ErrTitleNotDefined,
 		},
 		{
 			name: "context deadline",
@@ -246,7 +248,7 @@ func TestUpdate(t *testing.T) {
 				return ctx
 			}(),
 			id:     created.ID,
-			dto:    NoteDTO{Title: "x"},
+			dto:    repository.NoteDTO{Title: "x"},
 			expErr: context.DeadlineExceeded,
 		},
 	}
@@ -283,7 +285,7 @@ func TestUpdate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	repo := NewInMemoryDataBase()
-	created, _ := repo.Create(context.Background(), NoteDTO{Title: "x"})
+	created, _ := repo.Create(context.Background(), repository.NoteDTO{Title: "x"})
 
 	testTable := []struct {
 		name   string
@@ -301,7 +303,7 @@ func TestDelete(t *testing.T) {
 			name:   "not found",
 			ctx:    context.Background(),
 			id:     123,
-			expErr: ErrNotFoundID,
+			expErr: repository.ErrNotFoundID,
 		},
 		{
 			name: "context canceled",

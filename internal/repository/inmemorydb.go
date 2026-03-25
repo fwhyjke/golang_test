@@ -12,7 +12,7 @@ type InMemoryDataBase struct {
 	idGen atomic.Uint64
 }
 
-func NewInMemoryDataBase() *InMemoryDataBase {
+func NewInMemoryDataBase() NoteRepository {
 	return &InMemoryDataBase{
 		notes: make(map[uint64]Note),
 	}
